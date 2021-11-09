@@ -1,8 +1,12 @@
 
 #include "Keyboard.h"
 
+#define KEY_MENU 0xED // Keycode of the Menu key 
+// Super keys are already defined in Keyboard library
+
 const int SuperL_Pin = 9;
 const int SuperR_Pin = 8;
+const int Menu_Pin = 7;
 
 bool SuperL_OldState = LOW;
 bool SuperL_NewState = LOW;
@@ -14,10 +18,15 @@ bool SuperR_NewState = LOW;
 bool SuperR_RisingEdge = LOW;
 bool SuperR_FallingEdge = LOW;
 
+bool Menu_OldState = LOW;
+bool Menu_NewState = LOW;
+bool Menu_RisingEdge = LOW;
+bool Menu_FallingEdge = LOW;
+
 void setup() {
   pinMode(SuperL_Pin, INPUT);
   pinMode(SuperR_Pin, INPUT);
-
+  pinMode(Menu_Pin, INPUT);
 
   Keyboard.begin();
 }
@@ -56,5 +65,22 @@ void loop() {
   SuperR_OldState = SuperR_NewState;
   if (SuperR_RisingEdge) {Keyboard.press(KEY_RIGHT_GUI);}
   if (SuperR_FallingEdge) {Keyboard.release(KEY_RIGHT_GUI);}
+
+  
+  // ------------------------ MENU KEY ------------------------
+  Menu_NewState = digitalRead(Menu_Pin);
+  if (Menu_NewState == HIGH && Menu_OldState == LOW) {
+    Menu_RisingEdge = HIGH;
+  } 
+  else if (Menu_NewState == LOW && Menu_OldState == HIGH) {
+    Menu_FallingEdge = HIGH;
+  } 
+  else {
+    Menu_RisingEdge = LOW;
+    Menu_FallingEdge = LOW;
+  }
+  Menu_OldState = Menu_NewState;
+  if (Menu_RisingEdge) {Keyboard.press(KEY_MENU);}
+  if (Menu_FallingEdge) {Keyboard.release(KEY_MENU);}
 
 }
